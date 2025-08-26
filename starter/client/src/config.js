@@ -1,0 +1,10 @@
+// Reviewer config: used when REACT_APP_* env vars are not set.
+const apiId = '42ya9cwaw0' // <- your API id from `sls info`
+export const apiEndpoint = `https://${apiId}.execute-api.us-east-1.amazonaws.com/dev`
+
+export const authConfig = {
+  domain: 'dev-ml6figcbe2iotdpk.us.auth0.com',
+  clientId: 'jNqSvAjEAbe6DG3XLVht2A02jT7084BH',
+  audience: 'https://todo-api/',
+  callbackUrl: 'http://localhost:3000/callback'
+}

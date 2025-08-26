@@ -3,6 +3,7 @@ import dateFormat from 'dateformat'
 import React, { useState } from 'react'
 import { Divider, Grid, Input } from 'semantic-ui-react'
 import { createTodo } from '../api/todos-api'
+import { authConfig } from '../config.js'
 
 export function NewTodoInput({ onNewTodo }) {
   const [newTodoName, setNewTodoName] = useState('')
@@ -12,8 +13,8 @@ export function NewTodoInput({ onNewTodo }) {
   const onTodoCreate = async (event) => {
     try {
       const accessToken = await getAccessTokenSilently({
-        audience: `https://test-endpoint.auth0.com/api/v2/`,
-        scope: 'write:todos'
+        audience: authConfig.audience,
+        scope: 'openid profile email'
       })
       const dueDate = calculateDueDate()
       const createdTodo = await createTodo(accessToken, {

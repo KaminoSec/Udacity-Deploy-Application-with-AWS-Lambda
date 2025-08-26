@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Button, Form } from 'semantic-ui-react'
 import { getUploadUrl, uploadFile } from '../api/todos-api'
+import { authConfig } from '../config.js'
 
 const UploadState = {
   NoUpload: 'NoUpload',
@@ -43,8 +44,8 @@ export function EditTodo() {
 
       setUploadState(UploadState.FetchingPresignedUrl)
       const accessToken = await getAccessTokenSilently({
-        audience: `https://test-endpoint.auth0.com/api/v2/`,
-        scope: 'write:todos'
+        audience: authConfig.audience,
+        scope: 'openid profile email'
       })
       const uploadUrl = await getUploadUrl(accessToken, todoId)
 

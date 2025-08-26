@@ -1,8 +1,18 @@
+import { createTodo } from '../../businessLogic/todos.mjs'
+import { getUserId } from '../../auth/utils.mjs'
 
-export function handler(event) {
-  const newTodo = JSON.parse(event.body)
+export const handler = async (event) => {
+  const userId = getUserId(event)
+  const newTodo = JSON.parse(event.body || '{}')
 
-  // TODO: Implement creating a new TODO item
-  return undefined
+  const item = await createTodo(userId, newTodo)
+
+  return {
+    statusCode: 201,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true
+    },
+    body: JSON.stringify({ item })
+  }
 }
-

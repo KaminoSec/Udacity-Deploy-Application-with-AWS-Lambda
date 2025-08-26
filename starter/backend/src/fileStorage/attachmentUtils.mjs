@@ -1,5 +1,9 @@
 import AWS from 'aws-sdk'
-const s3 = new AWS.S3({ signatureVersion: 'v4' })
+import AWSXRay from 'aws-xray-sdk-core'
+
+// Wrap the v2 SDK with X-Ray for tracing
+const XAWS = AWSXRay.captureAWS(AWS)
+const s3 = new XAWS.S3({ signatureVersion: 'v4' })
 
 const bucket = process.env.ATTACHMENTS_S3_BUCKET
 const expires = Number(process.env.SIGNED_URL_EXPIRATION || 300)

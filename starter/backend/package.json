@@ -19,7 +19,7 @@
     "@middy/http-cors": "^3.6.2",
     "@middy/http-error-handler": "^3.6.2",
     "aws-sdk": "^2.1692.0",
-    "aws-xray-sdk-core": "^3.4.0",
+    "aws-xray-sdk-core": "^3.10.3",
     "axios": "^1.11.0",
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^8.5.1",

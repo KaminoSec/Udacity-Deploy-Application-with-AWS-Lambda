@@ -6,6 +6,9 @@ provider:
   runtime: nodejs18.x
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
+  tracing:
+    lambda: true
+    apiGateway: true
   environment:
     TODOS_TABLE: Todos-${self:provider.stage}
     TODOS_CREATED_AT_INDEX: CreatedAtIndex
@@ -14,6 +17,12 @@ provider:
     AUTH0_JWKS_URL: https://dev-ml6figcbe2iotdpk.us.auth0.com/.well-known/jwks.json
     AUTH0_AUDIENCE: https://todo-api/
     AUTH0_ISSUER_URL: https://dev-ml6figcbe2iotdpk.us.auth0.com/
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+        - xray:PutTelemetryRecords
+      Resource: '*'
 
 plugins:
   - serverless-iam-roles-per-function
@@ -22,6 +31,7 @@ plugins:
 functions:
   Auth:
     handler: src/lambda/auth/auth0Authorizer.handler
+    iamRoleStatementsInherit: true
 
   GetTodos:
     handler: src/lambda/http/getTodos.handler
@@ -31,6 +41,7 @@ functions:
           path: todos
           cors: true
           authorizer: Auth
+    iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow
         Action: dynamodb:Query
@@ -46,6 +57,11 @@ functions:
           path: todos
           cors: true
           authorizer: Auth
+          reqValidatorName: RequestBodyValidator
+          request:
+            schemas:
+              application/json: ${file(src/requests/create-todo-schema.json)}
+    iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow
         Action: dynamodb:PutItem
@@ -59,6 +75,7 @@ functions:
           path: todos/{todoId}
           cors: true
           authorizer: Auth
+    iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow
         Action: dynamodb:UpdateItem
@@ -72,6 +89,7 @@ functions:
           path: todos/{todoId}
           cors: true
           authorizer: Auth
+    iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow
         Action: dynamodb:DeleteItem
@@ -85,6 +103,7 @@ functions:
           path: todos/{todoId}/attachment
           cors: true
           authorizer: Auth
+    iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -97,6 +116,14 @@ functions:
 
 resources:
   Resources:
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        Name: RequestBodyValidator
+        RestApiId: !Ref ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false
+
     TodosTable:
       Type: AWS::DynamoDB::Table
       Properties:

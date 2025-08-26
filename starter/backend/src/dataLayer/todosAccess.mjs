@@ -1,9 +1,14 @@
+// ESM + CommonJS interop: import default, then read captureAWS
 import AWS from 'aws-sdk'
+import AWSXRay from 'aws-xray-sdk-core'
+
+// Wrap v2 SDK with X-Ray (produces a namespaced AWS with tracing)
+const XAWS = AWSXRay.captureAWS(AWS)
 
 export class TodosAccess {
   constructor() {
-    this.docClient = new AWS.DynamoDB.DocumentClient()
-    this.s3 = new AWS.S3({ signatureVersion: 'v4' })
+    this.docClient = new XAWS.DynamoDB.DocumentClient()
+    this.s3 = new XAWS.S3({ signatureVersion: 'v4' })
 
     this.todosTable = process.env.TODOS_TABLE
     this.indexName = process.env.TODOS_CREATED_AT_INDEX
